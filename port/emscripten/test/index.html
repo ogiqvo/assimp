@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <script src="assimp.js"></script>
+    <script type="text/javascript">
+      var FILENAME = 'demo-cube.fbx';
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET',FILENAME,true);
+      xhr.responseType = 'arraybuffer';
+      xhr.onload = function(e){
+        console.log(this.response.byteLength);
+      }
+      xhr.send();
+    </script>
+  </head>
+  <body>
+    <h1>Assimp object loading test</h1>
+  </body>
+</html>

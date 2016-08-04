@@ -51,8 +51,9 @@ const char* ex_getErrorString(){
   return err;
 }
 
-AiScene* ex_aiImportFile(char *filename,long postProcessing){
-  return NULL;
+const aiScene* ex_aiImportFile(char *cFilename,long postProcess){
+	const aiScene *cScene = aiImportFile(cFilename, (unsigned int) postProcess);
+	return cScene;
 }
 
 }
