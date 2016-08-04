@@ -2,12 +2,14 @@
   <head>
     <script src="assimp.js"></script>
     <script type="text/javascript">
-      var FILENAME = 'demo-cube.fbx';
+      var FILENAME = 'demo-cube.obj';
       var xhr = new XMLHttpRequest();
       xhr.open('GET',FILENAME,true);
       xhr.responseType = 'arraybuffer';
       xhr.onload = function(e){
-        console.log(this.response.byteLength);
+      var uInt8Array = new Uint8Array(this.response);
+      var obj = assimp.aiImportFile(FILENAME,0,uInt8Array);
+      console.log(obj);
       }
       xhr.send();
     </script>

@@ -54,8 +54,14 @@ assimp.getErrorString = (function(){
   };
 })();
 assimp.aiImportFile = (function(){
-  var c_aiImportFile = Module.cwrap('ex_aiImportFile','object',[]);
-  return function(){
-    return c_aiImportFile();
+  var c_aiImportFile = Module.cwrap('ex_aiImportFile','void',['string','number']);
+  return function(filepath,postProcess,bytes){
+    try{
+      Module.FS.createDataFile('/',filepath,bytes,true,true);
+      console.log('Load',filepath,bytes.length,'byte(s)');
+    }catch(e){
+      console.error(e);
+    }
+    return c_aiImportFile(filepath,postProcess);
   };
 })();

@@ -1,4 +1,3 @@
 !(function() {
-    var Module = {};
-
-var emscriptenate = function(Module) {
+  var Module = {};
+  var emscriptenate = function(Module) {

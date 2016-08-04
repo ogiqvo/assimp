@@ -1,11 +1,9 @@
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
+#include <iostream>
+#include <fstream>
 
 extern "C"{
-
-typedef struct AiScene{
-} AiScene;
-
 int ex_getVKeysize(){
   const int res = sizeof(aiVectorKey);
   return res;
@@ -51,9 +49,16 @@ const char* ex_getErrorString(){
   return err;
 }
 
-const aiScene* ex_aiImportFile(char *cFilename,long postProcess){
-	const aiScene *cScene = aiImportFile(cFilename, (unsigned int) postProcess);
-	return cScene;
-}
+const aiScene* ex_aiImportFile(const char *cFilename,int postProcess){
+  std::cout << "read file" << cFilename << std::endl;
 
+  std::ifstream infile(cFilename);
+  if(!infile.good()){
+    std::cout << "file" << cFilename << "isnt good" << std::endl;
+    return NULL;
+  }
+  
+  const aiScene *cScene = aiImportFile(cFilename, (unsigned int) postProcess);
+  return cScene;
+}
 }
