@@ -9,12 +9,23 @@
 # 	-DCMAKE_BUILD_TYPE=Debug \
 # 	-DASSIMP_BUILD_TESTS=OFF \
 # 	..
-rm -fr *.js *.html
-emcc -I../include \
+rm -fr *.js *.html *.mem
+emcc -O2 \
+     --closure 1 \
+     --memory-init-file 0 \
+     -I../include \
+     -s EXPORTED_FUNCTIONS="['_ex_getVKeysize','_ex_getQKeysize','_ex_getV3Dsize','_ex_getfloatsize','_ex_getintsize','_ex_getuintsize','_ex_getdoublesize','_ex_getlongsize','_ex_getErrorString','_ex_aiImportFile']" \
+     code/CMakeFiles/assimp.dir/*.o \
      tools/assimp_cmd/CMakeFiles/assimp_cmd.dir/CompareDump.cpp.o \
      tools/assimp_cmd/CMakeFiles/assimp_cmd.dir/Export.cpp.o \
      tools/assimp_cmd/CMakeFiles/assimp_cmd.dir/ImageExtractor.cpp.o \
      tools/assimp_cmd/CMakeFiles/assimp_cmd.dir/Info.cpp.o \
      tools/assimp_cmd/CMakeFiles/assimp_cmd.dir/WriteDumb.cpp.o \
      ../port/emscripten/emassimp.cpp \
-     -o out.html
+     -o _assimp.js
+cat ../port/emscripten/_begin.js \
+    _assimp.js \
+    ../port/emscripten/_middle.js \
+    ../port/emscripten/assimp_api.js \
+    ../port/emscripten/_end.js \
+    > assimp.js
