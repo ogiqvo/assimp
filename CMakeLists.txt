@@ -91,6 +91,7 @@ ENDIF(ASSIMP_DOUBLE_PRECISION)
 
 configure_file(
   ${CMAKE_CURRENT_LIST_DIR}/revision.h.in
+#  ${CMAKE_CURRENT_SOURCE_DIR}/revision.h.in
   ${CMAKE_CURRENT_BINARY_DIR}/revision.h
 )
 
@@ -124,7 +125,7 @@ IF((CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX) AND NOT CMAKE_COMPILER_
      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
   ENDIF()
   # hide all not-exported symbols
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -Wall -std=c++0x" )
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -Wall -std=c++11" )
 ELSEIF(MSVC)
   # enable multi-core compilation with MSVC
   add_compile_options(/MP)
@@ -305,32 +306,6 @@ IF ( ASSIMP_BUILD_ASSIMP_TOOLS )
   ENDIF ( WIN32 )
 
   ADD_SUBDIRECTORY( tools/assimp_cmd/ )
-
-  # Check dependencies for assimp_qt_viewer.
-  # Why here? Maybe user do not want Qt viewer and have no Qt.
-  # Why assimp_qt_viewer/CMakeLists.txt still contain similar check?
-  # Because viewer can be build independently of Assimp.
-  FIND_PACKAGE(Qt4 QUIET)
-  FIND_PACKAGE(DevIL QUIET)
-  FIND_PACKAGE(OpenGL QUIET)
-  IF ( Qt4_FOUND AND IL_FOUND AND OPENGL_FOUND)
-    ADD_SUBDIRECTORY( tools/assimp_qt_viewer/ )
-  ELSE()
-    SET ( ASSIMP_QT_VIEWER_DEPENDENCIES "")
-    IF (NOT Qt4_FOUND)
-      SET ( ASSIMP_QT_VIEWER_DEPENDENCIES "${ASSIMP_QT_VIEWER_DEPENDENCIES} Qt4")
-    ENDIF (NOT Qt4_FOUND)
-
-    IF (NOT IL_FOUND)
-      SET ( ASSIMP_QT_VIEWER_DEPENDENCIES "${ASSIMP_QT_VIEWER_DEPENDENCIES} DevIL")
-    ENDIF (NOT IL_FOUND)
-
-    IF (NOT OPENGL_FOUND)
-      SET ( ASSIMP_QT_VIEWER_DEPENDENCIES "${ASSIMP_QT_VIEWER_DEPENDENCIES} OpengGL")
-    ENDIF (NOT OPENGL_FOUND)
-
-    MESSAGE (WARNING "Build of assimp_qt_viewer is disabled. Unsatisfied dendencies: ${ASSIMP_QT_VIEWER_DEPENDENCIES}")
-  ENDIF ( Qt4_FOUND AND IL_FOUND AND OPENGL_FOUND)
 ENDIF ( ASSIMP_BUILD_ASSIMP_TOOLS )
 
 option ( ASSIMP_BUILD_SAMPLES
@@ -441,3 +416,8 @@ if(WIN32)
 		add_custom_command(TARGET UpdateAssimpLibsDebugSymbolsAndDLLs COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/code/Debug/assimp-${ASSIMP_MSVC_VERSION}-mtd.pdb		${LIB_DIR}assimp-${ASSIMP_MSVC_VERSION}-mtd.pdb VERBATIM)
 	ENDIF(MSVC12 OR MSVC14)
 ENDIF (WIN32)
+
+if (EMSCRIPTEN)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )  
+  set(CMAKE_EXECUTABLE_SUFFIX ".html")
+endif()
