@@ -120,7 +120,6 @@ uint32_t ReadWord(const char* input, const char*& cursor, const char* end)
     uint8_t w3 = *reinterpret_cast<const uint8_t*>(cursor);
     cursor++;
     uint32_t word = w0 | w1 << 8 | w2<<16 | w3 << 24;
-    std::cout << "ReadWord " << std::hex << word << std::endl;
     AI_SWAP4(word);
 
     return word;
