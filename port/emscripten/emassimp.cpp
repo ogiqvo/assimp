@@ -83,19 +83,12 @@ std::string escape_json(const std::string &s) {
   /**
    *
    */
-  enum AiPrimitiveType{
-    AI_PRIMITIVE_TYPE_POINT=0x1,
-    AI_PRIMITIVE_TYPE_LINE=0x2,
-    AI_PRIMITIVE_TYPE_TRIANGLE=0x4,
-    AI_PRIMITIVE_TYPE_POLYGON=0x8
-  };
-
-  /**
-   *
-   */
   class AiMesh{
   public:
     AiMesh(){}
+    void setPrimitiveTypes(int types){m_primitiveTypesRawValue=types;}
+    void setMaterialIndex(int idx){m_materialIndex=idx;}
+    void setName(std::string str){m_name = str;}
     int getNumVertices(){return m_numVertices;}
     int getNumFaces(){return m_numFaces;}
     int getMaterialIndex(){return m_materialIndex;}
@@ -115,13 +108,9 @@ std::string escape_json(const std::string &s) {
     int getNumBones(){return m_bones.size();}
     AiBone* getBoneAt(int i){return m_bones.at(i);}
     void appendResultJson(std::string& target){
-      target.append("{'type':'AiMesh','m_primitiveTypes':[");
-      bool isFirst = true;
-      for(AiPrimitiveType t : m_primitiveTypes){
-	if(isFirst){isFirst=false;}else{target.append(",");}
-	target.append(std::to_string(t));
-      }
-      target.append("],'m_numVertices':");
+      target.append("{'type':'AiMesh','m_primitiveTypes':");
+      target.append(std::to_string(m_primitiveTypesRawValue));
+      target.append(",'m_numVertices':");
       target.append(std::to_string(m_numVertices));
       target.append(",'m_numFaces':");
       target.append(std::to_string(m_numFaces));
@@ -130,7 +119,7 @@ std::string escape_json(const std::string &s) {
       target.append(",'m_name':'");
       target.append(escape_json(m_name));
       target.append("','m_vertices':[");
-      isFirst = true;
+      bool isFirst = true;
       for(float f : m_vertices){
 	if(isFirst){isFirst=false;}else{target.append(",");}
 	target.append(std::to_string(f));
@@ -175,7 +164,7 @@ std::string escape_json(const std::string &s) {
     }
     
   private:
-    std::set<AiPrimitiveType> m_primitiveTypes;
+    int m_primitiveTypesRawValue;
     int m_numVertices;
     int m_numFaces;
     int m_materialIndex;
@@ -214,6 +203,12 @@ std::string escape_json(const std::string &s) {
   /**
    *
    */
+  static bool copyBuffer(){
+  }
+  
+  /**
+   *
+   */
   static bool loadMeshes(const aiScene* cScene,AiScene* jScene){
     for (unsigned int meshNr = 0; meshNr < cScene->mNumMeshes; meshNr++){
       const aiMesh *cMesh = cScene->mMeshes[meshNr];
@@ -221,6 +216,26 @@ std::string escape_json(const std::string &s) {
       
       AiMesh *pMesh = new AiMesh();
       jScene->addMesh(pMesh);
+
+      int primTypes = cMesh->mPrimitiveTypes;
+      pMesh->setPrimitiveTypes(primTypes);
+      pMesh->setMaterialIndex(cMesh->mMaterialIndex);
+      pMesh->setName(cMesh->mName.C_Str());
+      bool isPureTriangle = cMesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE;
+	size_t faceBufferSize;
+      if(isPureTriangle){
+	faceBufferSize = cMesh->mNumFaces*3*sizeof(unsigned int);
+      }else{
+	int numVertexReferences = 0;
+	for (unsigned int face = 0; face < cMesh->mNumFaces; face++){
+	  numVertexReferences += cMesh->mFaces[face].mNumIndices;
+	}
+	faceBufferSize = numVertexReferences * sizeof(unsigned int);
+      }
+
+      if(cMesh->mNumVertices > 0){
+	
+      }
     }
     return true;
   }
