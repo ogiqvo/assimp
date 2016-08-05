@@ -8,8 +8,7 @@
       xhr.responseType = 'arraybuffer';
       xhr.onload = function(e){
       var uInt8Array = new Uint8Array(this.response);
-      var obj = assimp.aiImportFile(FILENAME,0,uInt8Array);
-      console.log(obj);
+      console.log(assimp.aiImportFile(FILENAME,uInt8Array));
       }
       xhr.send();
     </script>
