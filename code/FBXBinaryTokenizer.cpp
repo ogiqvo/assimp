@@ -51,6 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "Exceptional.h"
 #include "ByteSwapper.h"
+#include <iostream>
 
 namespace Assimp {
 namespace FBX {
@@ -110,10 +111,17 @@ uint32_t ReadWord(const char* input, const char*& cursor, const char* end)
         TokenizeError("cannot ReadWord, out of bounds",input, cursor);
     }
 
-    uint32_t word = *reinterpret_cast<const uint32_t*>(cursor);
+    uint8_t w0 = *reinterpret_cast<const uint8_t*>(cursor);
+    cursor++;
+    uint8_t w1 = *reinterpret_cast<const uint8_t*>(cursor);
+    cursor++;
+    uint8_t w2 = *reinterpret_cast<const uint8_t*>(cursor);
+    cursor++;
+    uint8_t w3 = *reinterpret_cast<const uint8_t*>(cursor);
+    cursor++;
+    uint32_t word = w0 | w1 << 8 | w2<<16 | w3 << 24;
+    std::cout << "ReadWord " << std::hex << word << std::endl;
     AI_SWAP4(word);
-
-    cursor += 4;
 
     return word;
 }
