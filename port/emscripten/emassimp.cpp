@@ -57,26 +57,26 @@ extern "C"{
 
   // aiImportFile
   
-std::string escape_json(const std::string &s) {
+  const std::string escape_json(const std::string &s) {
     std::ostringstream o;
     for (auto c = s.cbegin(); c != s.cend(); c++) {
-        if (*c == '"' || *c == '\\' || ('\x00' <= *c && *c <= '\x1f')) {
-            o << "\\u"
-              << std::hex << std::setw(4) << std::setfill('0') << (int)*c;
-        } else {
-            o << *c;
-        }
+      if (*c == '"' || *c == '\\' || ('\x00' <= *c && *c <= '\x1f')) {
+	o << "\\u"
+	  << std::hex << std::setw(4) << std::setfill('0') << (int)*c;
+      } else {
+	o << *c;
+      }
     }
     return o.str();
-}
+  }
   
   /**
    *
    */
   class AiBone{
   public:
-    void appendResultJson(std::string& target){
-      target.append("{'type':'AiBone'}");
+    void appendResultJson(std::stringstream& ss){
+      ss << "{\"type\":\"AiBone\"}";
     };    
   };
 
@@ -89,92 +89,46 @@ std::string escape_json(const std::string &s) {
     void setPrimitiveTypes(int types){m_primitiveTypesRawValue=types;}
     void setMaterialIndex(int idx){m_materialIndex=idx;}
     void setName(std::string str){m_name = str;}
-    int getNumVertices(){return m_numVertices;}
-    int getNumFaces(){return m_numFaces;}
-    int getMaterialIndex(){return m_materialIndex;}
-    std::string getName(){return m_name;}
-    int getNumPositionBuffer(){return m_vertices.size();}
-    float getPositionBufferAt(int i){return m_vertices.at(i);}
-    int getNumFaceBuffer(){return m_faces.size();}
-    int getFaceBufferAt(int i){return m_faces.at(i);}
-    int getNumFaceOffsetsBuffer(){return m_faceOffsets.size();}
-    int getFaceOffsetsBufferAt(int i){return m_faceOffsets.at(i);}
-    int getNumNormalBuffer(){return m_normals.size();}
-    int getNormalBufferAt(int i){return m_normals.at(i);}
-    int getNumTangentBuffer(){return m_tangents.size();}
-    int getTangentBufferAt(int i){return m_tangents.at(i);}
-    int getNumBitangentBuffer(){return m_bitangents.size();}
-    int getBitangentBufferAt(int i){return m_bitangents.at(i);}
-    int getNumBones(){return m_bones.size();}
-    AiBone* getBoneAt(int i){return m_bones.at(i);}
-    void appendResultJson(std::string& target){
-      target.append("{'type':'AiMesh','m_primitiveTypes':");
-      target.append(std::to_string(m_primitiveTypesRawValue));
-      target.append(",'m_numVertices':");
-      target.append(std::to_string(m_numVertices));
-      target.append(",'m_numFaces':");
-      target.append(std::to_string(m_numFaces));
-      target.append(",'m_materialIndex':");
-      target.append(std::to_string(m_materialIndex));
-      target.append(",'m_name':'");
-      target.append(escape_json(m_name));
-      target.append("','m_vertices':[");
-      bool isFirst = true;
-      for(float f : m_vertices){
-	if(isFirst){isFirst=false;}else{target.append(",");}
-	target.append(std::to_string(f));
-      }
-      target.append("],'m_faces':[");
-      isFirst = true;
-      for(int f : m_faces){
-	if(isFirst){isFirst=false;}else{target.append(",");}
-	target.append(std::to_string(f));
-      }
-      target.append("],'m_faceOffsets':[");
-      isFirst = true;
-      for(int f : m_faceOffsets){
-	if(isFirst){isFirst=false;}else{target.append(",");}
-	target.append(std::to_string(f));
-      }
-      target.append("],'m_normals':[");
-      isFirst = true;
-      for(float f : m_normals){
-	if(isFirst){isFirst=false;}else{target.append(",");}
-	target.append(std::to_string(f));
-      }
-      target.append("],'m_tangents':[");
-      isFirst = true;
-      for(float f : m_tangents){
-	if(isFirst){isFirst=false;}else{target.append(",");}
-	target.append(std::to_string(f));
-      }
-      target.append("],'m_bitangents':[");
-      isFirst = true;
-      for(float f : m_bitangents){
-	if(isFirst){isFirst=false;}else{target.append(",");}
-	target.append(std::to_string(f));
-      }
-      target.append("],'m_bones':[");
-      isFirst = true;
-      for(AiBone *b : m_bones){
-	if(isFirst){isFirst=false;}else{target.append(",");}
-	b->appendResultJson(target);
-      }
-      target.append("]}");
-    }
+    void setVerticesB64(std::string str){m_verticesB64=str;}
+    void setFacesB64(std::string str){m_facesB64=str;}
+    void setFaceOffsetsB64(std::string str){m_faceOffsetsB64=str;}
+    void setNormalsB64(std::string str){m_normalsB64=str;}
+    void setTangentsB64(std::string str){m_tangentsB64=str;}
+    void setBitangentsB64(std::string str){m_bitangentsB64=str;}
     
+    void appendResultJson(std::stringstream& ss){
+      ss << "{\"type\":\"AiMesh\",\"m_primitiveTypes\":" << m_primitiveTypesRawValue <<
+	",\"m_numVertices\":" << m_numVertices <<
+	",\"m_numFaces\":" << m_numFaces <<
+	",\"m_materialIndex\":" << m_materialIndex <<
+	",\"m_name\":\"" << escape_json(m_name) <<
+	"\",\"m_verticesB64\":\"" << m_verticesB64 <<
+        "\",\"m_facesB64\":\"" << m_facesB64 <<
+	"\",\"m_faceOffsetsB64\":\"" << m_faceOffsetsB64 <<
+	"\",\"m_normalsB64\":\"" << m_normalsB64 <<
+	"\",\"m_tangentsB64\":\"" << m_tangentsB64 <<
+	"\",\"m_bitangentsB64\":\"" << m_bitangentsB64 <<
+	"\",\"m_bones\":[";
+      bool isFirst = true;
+      for(AiBone* bone : m_bones){
+	if(isFirst){isFirst=false;}else{ss << ",";}
+	bone->appendResultJson(ss);
+      }
+      ss << "]}";
+    }
+   
   private:
     int m_primitiveTypesRawValue;
     int m_numVertices;
     int m_numFaces;
     int m_materialIndex;
     std::string m_name;
-    std::vector<float> m_vertices;
-    std::vector<int> m_faces;
-    std::vector<int> m_faceOffsets;
-    std::vector<float> m_normals;
-    std::vector<float> m_tangents;
-    std::vector<float> m_bitangents;
+    std::string m_verticesB64;
+    std::string m_facesB64;
+    std::string m_faceOffsetsB64;
+    std::string m_normalsB64;
+    std::string m_tangentsB64;
+    std::string m_bitangentsB64;
     std::vector<AiBone*> m_bones;
   };
 
@@ -184,28 +138,67 @@ std::string escape_json(const std::string &s) {
   class AiScene{
   public:
     AiScene(){}
-    int getNumMeshes(){
-      return m_meshes.size();
-    }
-    AiMesh* getMeshAt(int i){return m_meshes.at(i);}
     void addMesh(AiMesh* p){m_meshes.push_back(p);}
-    void appendResultJson(std::string& target){
-      target.append("{'type':'AiScene','meshes':[");
+    void appendResultJson(std::stringstream& ss){
+      ss << "{\"type\":\"AiScene\",\"meshes\":[";
       for(AiMesh* pMesh : m_meshes){
-	pMesh->appendResultJson(target);
+	pMesh->appendResultJson(ss);
       }
-      target.append("]}");
+      ss << "]}";
     }
   private:
     std::vector<AiMesh*> m_meshes;
   };
 
-  /**
-   *
-   */
-  static bool copyBuffer(){
+  // http://yano.hatenadiary.jp/entry/20100908/1283945820
+  bool encode_base64(const std::vector<unsigned char>& src, std::string& dst){
+    const std::string table("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
+    std::string cdst;
+
+    for (std::size_t i = 0; i < src.size(); ++i) {
+        switch (i % 3) {
+        case 0:
+            cdst.push_back(table[(src[i] & 0xFC) >> 2]);
+            if (i + 1 == src.size()) {
+                cdst.push_back(table[(src[i] & 0x03) << 4]);
+                cdst.push_back('=');
+                cdst.push_back('=');
+            }
+
+            break;
+        case 1:
+            cdst.push_back(table[((src[i - 1] & 0x03) << 4) | ((src[i + 0] & 0xF0) >> 4)]);
+            if (i + 1 == src.size()) {
+                cdst.push_back(table[(src[i] & 0x0F) << 2]);
+                cdst.push_back('=');
+            }
+
+            break;
+        case 2:
+            cdst.push_back(table[((src[i - 1] & 0x0F) << 2) | ((src[i + 0] & 0xC0) >> 6)]);
+            cdst.push_back(table[src[i] & 0x3F]);
+
+            break;
+        }
+    }
+
+    dst.swap(cdst);
+
+    return true;
+}
+
+  static std::string generateBufferB64str(void* cData, size_t size){
+    std::vector<unsigned char> buffer;
+    unsigned char* cDataC = reinterpret_cast<unsigned char*>(cData);
+    for(int i = 0;i < size;i++){
+      unsigned char d = reinterpret_cast<unsigned char>(*(cDataC+i));
+      buffer.push_back(d);
+    }
+    std::string b64str;
+    encode_base64(buffer,b64str);
+    return b64str;
   }
-  
+
   /**
    *
    */
@@ -222,7 +215,7 @@ std::string escape_json(const std::string &s) {
       pMesh->setMaterialIndex(cMesh->mMaterialIndex);
       pMesh->setName(cMesh->mName.C_Str());
       bool isPureTriangle = cMesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE;
-	size_t faceBufferSize;
+      size_t faceBufferSize;
       if(isPureTriangle){
 	faceBufferSize = cMesh->mNumFaces*3*sizeof(unsigned int);
       }else{
@@ -234,7 +227,62 @@ std::string escape_json(const std::string &s) {
       }
 
       if(cMesh->mNumVertices > 0){
+	pMesh->setVerticesB64(generateBufferB64str(cMesh->mVertices, cMesh->mNumVertices * sizeof(aiVector3D)));
+      }
+
+      if(cMesh->mNumFaces > 0){
+	if (isPureTriangle) {
+	    char* faceBuffer = (char*) malloc(faceBufferSize);
+
+	    size_t faceDataSize = 3 * sizeof(unsigned int);
+	    for (unsigned int face = 0; face < cMesh->mNumFaces; face++){
+	      memcpy(faceBuffer + face * faceDataSize, cMesh->mFaces[face].mIndices, faceDataSize);
+	    }
+
+	    pMesh->setFacesB64(generateBufferB64str(faceBuffer, faceBufferSize));
+	    free(faceBuffer);
+	}else{
+	  char* faceBuffer = (char*) malloc(faceBufferSize);
+	  char* offsetBuffer = (char*) malloc(cMesh->mNumFaces * sizeof(unsigned int));
+	  
+	  size_t faceBufferPos = 0;
+	  for (unsigned int face = 0; face < cMesh->mNumFaces; face++){
+	    size_t faceBufferOffset = faceBufferPos / sizeof(unsigned int);
+	    memcpy(offsetBuffer + face * sizeof(unsigned int), &faceBufferOffset, sizeof(unsigned int));
+	    
+	    size_t faceDataSize = cMesh->mFaces[face].mNumIndices * sizeof(unsigned int);
+	    memcpy(faceBuffer + faceBufferPos, cMesh->mFaces[face].mIndices, faceDataSize);
+	    faceBufferPos += faceDataSize;
+	  }
+	  
+	  pMesh->setFacesB64(generateBufferB64str(faceBuffer, faceBufferSize));
+	  pMesh->setFaceOffsetsB64(generateBufferB64str(offsetBuffer, cMesh->mNumFaces * sizeof(unsigned int)));
+	  
+	  free(faceBuffer);
+	  free(offsetBuffer);
+	}
+      }
+
+      if(cMesh->HasNormals()){
+	pMesh->setNormalsB64(generateBufferB64str(cMesh->mNormals, cMesh->mNumVertices * 3 * sizeof(float)));
+      }
+      
+      if(cMesh->mTangents != NULL){
+	pMesh->setTangentsB64(generateBufferB64str(cMesh->mTangents, cMesh->mNumVertices * 3 * sizeof(float)));
+      }
 	
+      if(cMesh->mBitangents != NULL){
+	pMesh->setBitangentsB64(generateBufferB64str(cMesh->mBitangents, cMesh->mNumVertices * 3 * sizeof(float)));
+      }
+
+      for(int c = 0;c < AI_MAX_NUMBER_OF_COLOR_SETS;c++){
+      }
+
+      for(int c = 0;c < AI_MAX_NUMBER_OF_TEXTURECOORDS;c++){
+      }
+
+      for(unsigned int b = 0;b < cMesh->mNumBones;b++){
+	aiBone *cBone = cMesh->mBones[b];
       }
     }
     return true;
@@ -258,8 +306,12 @@ std::string escape_json(const std::string &s) {
   end:
     aiReleaseImport(cScene);
     
-    std::string resultJson;
-    jScene.appendResultJson(resultJson);
-    return resultJson.c_str();
+    std::stringstream ss;
+    jScene.appendResultJson(ss);
+    ss.clear(std::stringstream::goodbit);
+    std::string str = ss.str();
+    const char* cstr = str.c_str();
+    std::cout << "result " << cstr << std::endl;
+    return cstr;
   }
 }
