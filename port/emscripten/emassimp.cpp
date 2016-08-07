@@ -41,7 +41,11 @@ class AiMesh{
 public:
   AiMesh(){}
   void setPrimitiveTypes(int types){m_primitiveTypesRawValue=types;}
+  void setNumVertices(int i){m_numVertices = i;}
+  void setNumFaces(int i){m_numFaces=i;}
   void setMaterialIndex(int idx){m_materialIndex=idx;}
+  void setIsPureTriangle(bool b){m_isPureTriangle=b;}
+  void setFaceBufferSize(int i){m_faceBufferSize=i;}
   void setName(std::string str){m_name = str;}
   void setVerticesB64(std::string str){m_verticesB64=str;}
   void setFacesB64(std::string str){m_facesB64=str;}
@@ -55,6 +59,8 @@ public:
       ",\"m_numVertices\":" << m_numVertices <<
       ",\"m_numFaces\":" << m_numFaces <<
       ",\"m_materialIndex\":" << m_materialIndex <<
+      ",\"m_isPureTriangle\":" << m_isPureTriangle <<
+      ",\"m_faceBufferSize\":" << m_faceBufferSize <<
       ",\"m_name\":\"" << escape_json(m_name) <<
       "\",\"m_verticesB64\":\"" << m_verticesB64 <<
       "\",\"m_facesB64\":\"" << m_facesB64 <<
@@ -76,6 +82,8 @@ private:
   int m_numVertices;
   int m_numFaces;
   int m_materialIndex;
+  bool m_isPureTriangle;
+  int m_faceBufferSize;
   std::string m_name;
   std::string m_verticesB64;
   std::string m_facesB64;
@@ -180,6 +188,11 @@ static bool loadMeshes(const aiScene* cScene,AiScene* jScene){
       faceBufferSize = numVertexReferences * sizeof(unsigned int);
     }
 
+    pMesh->setNumVertices(cMesh->mNumVertices);
+    pMesh->setNumFaces(cMesh->mNumFaces);
+    pMesh->setIsPureTriangle(isPureTriangle);
+    pMesh->setFaceBufferSize(faceBufferSize);
+    
     if(cMesh->mNumVertices > 0){
       pMesh->setVerticesB64(generateBufferB64str(cMesh->mVertices, cMesh->mNumVertices * sizeof(aiVector3D)));
     }
