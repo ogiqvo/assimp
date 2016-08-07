@@ -290,7 +290,7 @@ extern "C"{
     return err;
   }
 
-  const char* ex_aiImportFile(const char *cFilename){
+  const char* ex_aiImportFile(const char *cFilename,long postProcess){
     std::cout << "read file " << cFilename << std::endl;
 
     std::ifstream infile(cFilename);
@@ -300,7 +300,7 @@ extern "C"{
     }
 
     AiScene jScene;
-    const aiScene *cScene = aiImportFile(cFilename, (unsigned int) 0);
+    const aiScene *cScene = aiImportFile(cFilename, (unsigned int) postProcess);
     if (!loadMeshes(cScene,&jScene)){goto error;}
     goto end;
   error:

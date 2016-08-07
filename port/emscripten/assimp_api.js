@@ -53,8 +53,7 @@ assimp.getErrorString = (function(){
     return c_getErrorString();
   };
 })();
-assimp.aiImportFile = (function(){
-  var c_aiImportFile = Module.cwrap('ex_aiImportFile','string',['string']);
+assimp.aiSaveUint8ArrayAsFileToEmscriptenVm = (function(){
   return function(filepath,bytes){
     try{
       Module.FS.createDataFile('/',filepath,bytes,true,true);
@@ -62,6 +61,11 @@ assimp.aiImportFile = (function(){
     }catch(e){
       console.error(e);
     }
-    return c_aiImportFile(filepath);
+  };
+})();
+assimp.aiImportFile = (function(){
+  var c_aiImportFile = Module.cwrap('ex_aiImportFile','string',['string','number']);
+  return function(filepath,postProcessing){
+    return c_aiImportFile(filepath,postProcessing);
   };
 })();
