@@ -10,14 +10,14 @@
 # 	-DASSIMP_BUILD_TESTS=OFF \
 # 	..
 # emmake make
-# rm -fr *.js *.html *.mem
+rm -fr *.js *.html *.mem
 em++ -std=c++11 \
      -o _assimp.js \
      -O2 \
+     --bind \
      --memory-init-file 0 \
      -I../include \
      -s EXPORTED_FUNCTIONS="['_ex_getVKeysize','_ex_getQKeysize','_ex_getV3Dsize','_ex_getfloatsize','_ex_getintsize','_ex_getuintsize','_ex_getdoublesize','_ex_getlongsize','_ex_getErrorString','_ex_aiImportFile','FS']" \
-     -s VERBOSE=1 \
      code/libassimpd.so \
      ../port/emscripten/emassimp.cpp
 
@@ -29,3 +29,4 @@ cat ../port/emscripten/_begin.js \
     > assimp.js
 
 cp -f assimp.js ../port/emscripten/test/assimp.js
+cp -f assimp.js ../../ogiqvo.com-opensciencemap/vtm-web/src/org/oscim/gdx/resources/js/assimp.js
