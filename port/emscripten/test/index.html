@@ -8,7 +8,8 @@
       xhr.responseType = 'arraybuffer';
       xhr.onload = function(e){
       var uInt8Array = new Uint8Array(this.response);
-      var resultJsonString = assimp.aiImportFile(FILENAME,uInt8Array);
+      assimp.aiSaveUint8ArrayAsFileToEmscriptenVm(FILENAME,uInt8Array);
+      var resultJsonString = assimp.aiImportFile(FILENAME,0);
       var obj = JSON.parse(resultJsonString);
       console.log(obj);
       }
